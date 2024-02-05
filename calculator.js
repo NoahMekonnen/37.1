@@ -110,4 +110,4 @@ app.listen(3000, function () {
     console.log('App on port 3000');
 })
 
-modules.export = app
+module.exports = app
