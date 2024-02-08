@@ -3,6 +3,60 @@ const ExpressError = require('./ExpressError');
 
 const app = express();
 
+function findMean(nums) {
+
+    nums.sort()
+    let finalSum = 0
+    for (let num of nums) {
+        if (typeof num != "number") {
+            throw new ExpressError(`${num} is not a number`, 400)
+        }
+        finalSum += num
+    }
+    if (nums.length > 0) {
+        mean = finalSum / nums.length
+    }
+    else mean = 0
+    return mean
+}
+
+function findMedian(nums) {
+    nums.sort()
+    let median;
+    if (nums.length % 2 == 1) {
+        median = nums[Math.floor(nums.length / 2)]
+    } else {
+        const upper = nums[(nums.length / 2)]
+        const lower = nums[((nums.length / 2) - 1)]
+        median = (upper + lower) / 2
+    }
+    return median
+}
+
+function findMode(nums) {
+    nums.sort()
+    finalDict = {}
+    for (let num of nums) {
+        if (!finalDict[num]) {
+            finalDict[num] = 1
+            console.log(num)
+        }
+        else {
+            finalDict[num] += 1
+            console.log(num)
+        }
+    }
+
+    let max = 0
+    let mode = -1
+    for (let key of Object.keys(finalDict)) {
+        if (finalDict[key] > max) {
+            max = finalDict[key]
+            mode = key
+        }
+    }
+    return parseInt(mode)
+}
 
 app.get('/mean', function (req, res, next) {
     try {
@@ -10,14 +64,7 @@ app.get('/mean', function (req, res, next) {
         if (nums.length == 0) {
             throw new ExpressError("Numbers are required", 400)
         }
-        let finalSum = 0
-        for (let num of nums) {
-            if (typeof num != int) {
-                throw new ExpressError(`${num} is not a number`, 400)
-            }
-            finalSum += num
-        }
-        mean = finalSum / nums.length
+        const mean = findMean(nums)
         return response.json({
             operation: 'mean',
             value: mean
@@ -38,14 +85,7 @@ app.get('/median', function (req, res, next) {
                 throw new ExpressError(`${num} is not a number`, 400)
             }
         }
-        let median;
-        if (nums.length % 2 == 1) {
-            median = nums.length / 2
-        } else {
-            const upper = Math.ceil(nums.length / 2)
-            const lower = Math.floor(nums.length / 2)
-            median = (upper + lower) / 2
-        }
+        const median = findMedian(nums)
         return response.json({
             operation: 'median',
             value: median
@@ -66,30 +106,13 @@ app.get('/mode', function (req, res, next) {
                 throw new ExpressError(`${num} is not a number`, 400)
             }
         }
-        finalDict = {}
-        for (let num of nums) {
-            if (!finalDict.num) {
-                finalDict.num = 1
-            }
-            else {
-                finalDict.num += 1
-            }
-        }
-
-        let max = 0
-        let mode = -1
-        for (key in finalDict.keys) {
-            if (finalDict.key > max) {
-                max = finalDict.key
-                mode = key
-            }
-        }
+        const mode = findMode(nums)
 
         return response.json({
             operation: 'mode',
             value: mode
         });
-    }catch{
+    } catch {
         next()
     }
 })
@@ -110,4 +133,4 @@ app.listen(3000, function () {
     console.log('App on port 3000');
 })
 
-module.exports = app
+module.exports = { findMean, findMedian, findMode }
